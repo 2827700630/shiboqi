@@ -1,0 +1,6 @@
+../Core/Src/main.c:106:5:main	12
+../Core/Src/main.c:303:6:SystemClock_Config	3
+../Core/Src/main.c:346:6:analyze_waveform	15
+../Core/Src/main.c:414:6:HAL_UART_RxCpltCallback	6
+../Core/Src/main.c:448:6:parse_uart_command	33
+../Core/Src/main.c:592:6:Error_Handler	1

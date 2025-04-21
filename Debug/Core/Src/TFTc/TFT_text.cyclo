@@ -1,0 +1,3 @@
+../Core/Src/TFTc/TFT_text.c:19:13:_TFT_Draw_Glyph	8
+../Core/Src/TFTc/TFT_text.c:77:6:TFT_Show_String	4
+../Core/Src/TFTc/TFT_text.c:111:6:TFT_Show_Char	5

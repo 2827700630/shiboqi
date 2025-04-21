@@ -1,0 +1,3 @@
+../Core/Src/TFTc/TFT_init.c:19:6:TFT_Init_ST7735S	16	static
+../Core/Src/TFTc/TFT_init.c:161:13:TFT_Set_Direction	16	static
+../Core/Src/TFTc/TFT_init.c:199:6:TFT_Init_ST7789v3	16	static

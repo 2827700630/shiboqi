@@ -1,0 +1,131 @@
+#include "asr.h"
+extern "C"{ void * __dso_handle = 0 ;}
+#include "setup.h"
+#include "HardwareSerial.h"
+#include "myLib/asr_event.h"
+
+uint32_t snid;
+void ASR_CODE();
+void app();
+
+//{speak:小蝶-清新女声,vol:2,speed:10,platform:haohaodada}
+//{playid:10001,voice:欢迎使用语音示波器助手，请说指令。}
+//{playid:10002,voice:已退出}
+
+/* 示波器语音指令处理 */
+void ASR_CODE() {
+  switch (snid) {
+    // --- 通道1控制 ---
+    case 0:  // 开启通道1
+      Serial1.print(":CHAN1 ON\n"); 
+      break;
+    case 1:  // 关闭通道1
+      Serial1.print(":CHAN1 OFF\n"); 
+      break;
+    case 2:  // 通道1增大量程
+      Serial1.print(":CHAN1:VOLTS 2V\n"); 
+      break;
+    case 3:  // 通道1减小量程
+      Serial1.print(":CHAN1:VOLTS 0.5V\n"); 
+      break;
+
+    // --- 通道2控制 ---
+    case 4:  // 开启通道2
+      Serial1.print(":CHAN2 ON\n"); 
+      break;
+    case 5:  // 关闭通道2
+      Serial1.print(":CHAN2 OFF\n"); 
+      break;
+    case 6:  // 通道2增大量程
+      Serial1.print(":CHAN2:VOLTS 2V\n"); 
+      break;
+    case 7:  // 通道2减小量程
+      Serial1.print(":CHAN2:VOLTS 0.5V\n"); 
+      break;
+
+    // --- 通用指令 ---
+    case 8:   // 自动设置
+      Serial1.print(":AUTOSCALE\n"); 
+      break;
+    case 9:   // 运行/停止
+      Serial1.print(":RUN\n"); 
+      break;
+
+    // --- 时基控制 ---
+    case 10:  // 时基设为1ms/div
+      Serial1.print(":TIM:MAIN 0.001\n");
+      break;
+    case 11:  // 时基设为10ms/div
+      Serial1.print(":TIM:MAIN 0.01\n");
+      break;
+    case 12:  // 时基设为100ms/div
+      Serial1.print(":TIM:MAIN 0.1\n");
+      break;
+
+    // --- 触发控制 ---
+    case 13:  // 边沿触发，上升沿
+      Serial1.print(":TRIG:EDGE:SOUR CHAN1\n");
+      Serial1.print(":TRIG:EDGE:SLOP POS\n");
+      break;
+    case 14:  // 边沿触发，下降沿
+      Serial1.print(":TRIG:EDGE:SOUR CHAN1\n");
+      Serial1.print(":TRIG:EDGE:SLOP NEG\n");
+      break;
+
+    // --- 耦合控制 ---
+    case 15:  // 直流耦合
+      Serial1.print(":CHAN1:COUP DC\n");
+      break;
+    case 16:  // 交流耦合
+      Serial1.print(":CHAN1:COUP AC\n");
+      break;
+
+    default:
+     Serial1.print(":AUTOSCALE\n"); 
+      break;
+  }
+}
+
+void app() {
+  while (1) {
+    delay(100);
+  }
+  vTaskDelete(NULL);
+}
+
+void hardware_init() {
+  vol_set(1);
+  setPinFun(2, FORTH_FUNCTION);
+  setPinFun(3, FORTH_FUNCTION);
+  Serial1.begin(115200);  // 初始化串口
+  set_wakeup_forever();
+  xTaskCreate(app, "app", 128, NULL, 4, NULL);
+  vTaskDelete(NULL);
+}
+
+void setup() {
+  // 语音指令定义
+  // {ID:0, keyword:"命令词", ASR:"开启通道一", ASRTO:"通道一已开启"}
+  // {ID:1, keyword:"命令词", ASR:"关闭通道一", ASRTO:"通道一已关闭"}
+  // {ID:2, keyword:"命令词", ASR:"通道一增大量程", ASRTO:"通道一量程增加"}
+  // {ID:3, keyword:"命令词", ASR:"通道一减小量程", ASRTO:"通道一量程减小"}
+  // {ID:4, keyword:"命令词", ASR:"开启通道二", ASRTO:"通道二已开启"}
+  // {ID:5, keyword:"命令词", ASR:"关闭通道二", ASRTO:"通道二已关闭"}
+  // {ID:6, keyword:"命令词", ASR:"通道二增大量程", ASRTO:"通道二量程增加"}
+  // {ID:7, keyword:"命令词", ASR:"通道二减小量程", ASRTO:"通道二量程减小"}
+  // {ID:8, keyword:"命令词", ASR:"自动设置", ASRTO:"正在自动配置示波器"}
+  // {ID:9, keyword:"命令词", ASR:"运行", ASRTO:"示波器运行中"}
+  // {ID:10, keyword:"命令词", ASR:"时基设为一毫秒", ASRTO:"时基已设为一毫秒"}
+  // {ID:11, keyword:"命令词", ASR:"时基设为十毫秒", ASRTO:"时基已设为十毫秒"}
+  // {ID:12, keyword:"命令词", ASR:"时基设为一百毫秒", ASRTO:"时基已设为一百毫秒"}
+  // {ID:13, keyword:"命令词", ASR:"上升沿触发", ASRTO:"设置为上升沿触发"}
+  // {ID:14, keyword:"命令词", ASR:"下降沿触发", ASRTO:"设置为下降沿触发"}
+  // {ID:15, keyword:"命令词", ASR:"直流耦合", ASRTO:"设置为直流耦合"}
+  // {ID:16, keyword:"命令词", ASR:"交流耦合", ASRTO:"设置为交流耦合"}
+
+  // 硬件初始化
+  setPinFun(4, FIRST_FUNCTION);
+  pinMode(4, OUTPUT);
+  digitalWrite(4, 0);
+}
+/** edittype="asr_procode" */
